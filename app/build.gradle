@@ -54,4 +54,7 @@ dependencies {
     // To add BLE Library as a module, replace the above dependency with the following
     // and uncomment 2 lines in settings.gradle file.
     // implementation project(":ble-livedata")
+    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.0.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
 }

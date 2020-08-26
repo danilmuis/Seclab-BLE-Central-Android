@@ -22,8 +22,11 @@
 
 package no.nordicsemi.android.blinky;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -56,6 +59,7 @@ public class BlinkyActivity extends AppCompatActivity {
 	@BindView(R.id.button_state) TextView buttonState;
 	//@BindView(R.id.button_1) MaterialButton button1;
 	//@BindView(R.id.button_1)  MaterialButton button1;
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,11 +100,13 @@ public class BlinkyActivity extends AppCompatActivity {
 
 
 		button1.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
 				System.out.println("BUTTON 1");
 				viewModel.sendButton1();
 				openDialogLogin();
+
 			}
 		});
 		button2.setOnClickListener(new View.OnClickListener() {
