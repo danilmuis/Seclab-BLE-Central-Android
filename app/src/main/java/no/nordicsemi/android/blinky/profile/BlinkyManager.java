@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.data.Data;
@@ -51,7 +52,7 @@ public class BlinkyManager extends ObservableBleManager {
 	public final static UUID LBS_UUID_SERVICE = UUID.fromString("00010000-89BD-43C8-9231-40F6E305F96D");
 	/** BUTTON characteristic UUID. */
 	//private final static UUID LBS_UUID_BUTTON_CHAR = UUID.fromString("00001524-1212-efde-1523-785feabcd123");
-	private final static UUID LBS_UUID_BUTTON_CHAR = UUID.fromString("00010010-89BD-43C8-9231-40F6E305F96D");
+	private final static UUID LBS_UUID_OUTPUT = UUID.fromString("00010010-89BD-43C8-9231-40F6E305F96D");
 
 	/** LED characteristic UUID. */
 	//private final static UUID LBS_UUID_LED_CHAR = UUID.fromString("00001525-1212-efde-1523-785feabcd123");
@@ -60,7 +61,7 @@ public class BlinkyManager extends ObservableBleManager {
 	private final MutableLiveData<Boolean> ledState = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> buttonState = new MutableLiveData<>();
 
-	private BluetoothGattCharacteristic buttonCharacteristic, ledCharacteristic;
+	private BluetoothGattCharacteristic outputCharacteristic, ledCharacteristic;
 	private LogSession logSession;
 	private boolean supported;
 	private boolean ledOn;
@@ -160,10 +161,23 @@ public class BlinkyManager extends ObservableBleManager {
 	private class BlinkyBleManagerGattCallback extends BleManagerGattCallback {
 		@Override
 		protected void initialize() {
-			setNotificationCallback(buttonCharacteristic).with(buttonCallback);
-			readCharacteristic(ledCharacteristic).with(ledCallback).enqueue();
-			readCharacteristic(buttonCharacteristic).with(buttonCallback).enqueue();
-			enableNotifications(buttonCharacteristic).enqueue();
+			setNotificationCallback(outputCharacteristic).with(buttonCallback);
+			//readCharacteristic(ledCharacteristic).with(ledCallback).enqueue();
+			String x = "";
+			readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
+			//System.out.println(readCharacteristic(outputCharacteristic).toString());
+			readCharacteristic(outputCharacteristic).with(x).enqueue();
+			//System.out.println(readCharacteristic(outputCharacteristic).enqueue());
+			//System.out.println(readCharacteristic(outputCharacteristic).enqueue());
+			//sleep(5);
+			//System.out.println(Arrays.toString(outputCharacteristic.getValue()));
+			//System.out.println(outputCharacteristic.getValue());
+			enableNotifications(outputCharacteristic).enqueue();
+			System.out.println("INIT-GAN");
+
+			//System.out.println(buttonCallback.onButtonStateChanged());
+			//readCharacteristic(ledCharacteristic).with(le)
+			//System.out.println(outputCharacteristic.getValue()[0]);
 		}
 
 		@Override
@@ -171,8 +185,12 @@ public class BlinkyManager extends ObservableBleManager {
 			final BluetoothGattService service = gatt.getService(LBS_UUID_SERVICE);
 			System.out.println("INI SERVICE : "+service);
 			if (service != null) {
-				buttonCharacteristic = service.getCharacteristic(LBS_UUID_BUTTON_CHAR);
+				outputCharacteristic = service.getCharacteristic(LBS_UUID_OUTPUT);
 				ledCharacteristic = service.getCharacteristic(LBS_UUID_LED_CHAR);
+
+				//System.out.println(outputCharacteristic.getValue());
+
+
 			}
 
 			boolean writeRequest = false;
@@ -182,13 +200,13 @@ public class BlinkyManager extends ObservableBleManager {
 
 			}
 
-			supported = buttonCharacteristic != null && ledCharacteristic != null && writeRequest;
+			supported = outputCharacteristic != null && ledCharacteristic != null && writeRequest;
 			return supported;
 		}
 
 		@Override
 		protected void onDeviceDisconnected() {
-			buttonCharacteristic = null;
+			outputCharacteristic = null;
 			ledCharacteristic = null;
 		}
 	}
@@ -217,6 +235,7 @@ public class BlinkyManager extends ObservableBleManager {
 		if (ledCharacteristic == null)
 			return;
 		writeCharacteristic(ledCharacteristic,BlinkyLED.BT1()).with(ledCallback).enqueue();
+		//readCharacteristic()
 	}
 	public void sendButton2(){
 		if (ledCharacteristic == null)
