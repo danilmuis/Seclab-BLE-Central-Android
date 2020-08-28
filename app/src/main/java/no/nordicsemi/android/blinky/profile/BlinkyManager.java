@@ -25,15 +25,19 @@ package no.nordicsemi.android.blinky.profile;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -57,11 +61,13 @@ public class BlinkyManager extends ObservableBleManager {
 	/** LED characteristic UUID. */
 	//private final static UUID LBS_UUID_LED_CHAR = UUID.fromString("00001525-1212-efde-1523-785feabcd123");
 	private final static UUID LBS_UUID_LED_CHAR = UUID.fromString("00010001-89BD-43C8-9231-40F6E305F96D");
+	private final static UUID LBS_UUID_SOMETHING = UUID.fromString("00002901-0000-1000-8000-00805f9b34fb");
 
 	private final MutableLiveData<Boolean> ledState = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> buttonState = new MutableLiveData<>();
 
 	private BluetoothGattCharacteristic outputCharacteristic, ledCharacteristic;
+	private BluetoothGattDescriptor something;
 	private LogSession logSession;
 	private boolean supported;
 	private boolean ledOn;
@@ -163,14 +169,17 @@ public class BlinkyManager extends ObservableBleManager {
 		protected void initialize() {
 			setNotificationCallback(outputCharacteristic).with(buttonCallback);
 			//readCharacteristic(ledCharacteristic).with(ledCallback).enqueue();
-			String x = "";
+			//String x = "";
+            //System.out.println(outputCharacteristic);
 			readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
-			//System.out.println(readCharacteristic(outputCharacteristic).toString());
-			readCharacteristic(outputCharacteristic).with(x).enqueue();
-			//System.out.println(readCharacteristic(outputCharacteristic).enqueue());
-			//System.out.println(readCharacteristic(outputCharacteristic).enqueue());
-			//sleep(5);
-			//System.out.println(Arrays.toString(outputCharacteristic.getValue()));
+			readDescriptor(outputCharacteristic.getDescriptors().get(0)).with(buttonCallback).enqueue();
+			//System.out.println(outputCharacteristic.getValue());
+			//System.out.println(outputCharacteristic.getDescriptors().get(0).getUuid());
+			//readDescriptor(outputCharacteristic.getDescriptors().get(0).getValue())
+
+			System.out.println("desc"+outputCharacteristic.getDescriptors().get(0).getValue());
+
+			//System.out.println("uuid"+outputCharacteristic.getUuid());
 			//System.out.println(outputCharacteristic.getValue());
 			enableNotifications(outputCharacteristic).enqueue();
 			System.out.println("INIT-GAN");
@@ -183,13 +192,15 @@ public class BlinkyManager extends ObservableBleManager {
 		@Override
 		public boolean isRequiredServiceSupported(@NonNull final BluetoothGatt gatt) {
 			final BluetoothGattService service = gatt.getService(LBS_UUID_SERVICE);
-			System.out.println("INI SERVICE : "+service);
+			//System.out.println("INI SERVICE : "+service);
 			if (service != null) {
 				outputCharacteristic = service.getCharacteristic(LBS_UUID_OUTPUT);
 				ledCharacteristic = service.getCharacteristic(LBS_UUID_LED_CHAR);
 
-				//System.out.println(outputCharacteristic.getValue());
 
+				//System.out.println(outputCharacteristic.describeContents());
+				//System.out.println(outputCharacteristic.getValue());
+				//System.out.println(outputCharacteristic.getWriteType());
 
 			}
 
@@ -234,13 +245,34 @@ public class BlinkyManager extends ObservableBleManager {
 	public void sendButton1(){
 		if (ledCharacteristic == null)
 			return;
-		writeCharacteristic(ledCharacteristic,BlinkyLED.BT1()).with(ledCallback).enqueue();
-		//readCharacteristic()
+		//writeCharacteristic(ledCharacteristic,BlinkyLED.BT1()).with(ledCallback).enqueue();
+
 	}
+	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 	public void sendButton2(){
 		if (ledCharacteristic == null)
 			return;
-		writeCharacteristic(ledCharacteristic,BlinkyLED.BT2()).with(ledCallback).enqueue();
+		//readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
+		String sesuatu = (Arrays.toString(outputCharacteristic.getValue()));
+		byte[] bytearr = sesuatu.getBytes(StandardCharsets.UTF_8);
+		//sesuatu = sesuatu.substring(1,sesuatu.length()-1);
+
+		String result = new String(outputCharacteristic.getValue());
+		System.out.println(sesuatu);
+		System.out.println(bytearr);
+		System.out.println(result);
+//		String kata[] = sesuatu.split(",");
+//		for(int i=0;i<kata.length;i++){
+//			if(!kata[i].matches("0")){
+//				System.out.println((char)Integer.parseInt(kata[i]));
+//			}
+//
+//		}
+
+
+		System.out.println(sesuatu.charAt(0));
+		System.out.println(outputCharacteristic.getIntValue(0,0));
+		//writeCharacteristic(ledCharacteristic,BlinkyLED.BT2()).with(ledCallback).enqueue();
 	}
 	public void sendButton3(){
 		if (ledCharacteristic == null)
