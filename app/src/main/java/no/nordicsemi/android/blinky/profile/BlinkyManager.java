@@ -172,12 +172,12 @@ public class BlinkyManager extends ObservableBleManager {
 			//String x = "";
             //System.out.println(outputCharacteristic);
 			readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
-			readDescriptor(outputCharacteristic.getDescriptors().get(0)).with(buttonCallback).enqueue();
+			//readDescriptor(outputCharacteristic.getDescriptors().get(0)).with(buttonCallback).enqueue();
 			//System.out.println(outputCharacteristic.getValue());
 			//System.out.println(outputCharacteristic.getDescriptors().get(0).getUuid());
 			//readDescriptor(outputCharacteristic.getDescriptors().get(0).getValue())
 
-			System.out.println("desc"+outputCharacteristic.getDescriptors().get(0).getValue());
+			//System.out.println("desc"+outputCharacteristic.getDescriptors().get(0).getValue());
 
 			//System.out.println("uuid"+outputCharacteristic.getUuid());
 			//System.out.println(outputCharacteristic.getValue());
@@ -250,17 +250,24 @@ public class BlinkyManager extends ObservableBleManager {
 	}
 	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 	public void sendButton2(){
+		sleep(10);
 		if (ledCharacteristic == null)
 			return;
 		//readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
+		//sleep(5);
+		readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
 		String sesuatu = (Arrays.toString(outputCharacteristic.getValue()));
 		byte[] bytearr = sesuatu.getBytes(StandardCharsets.UTF_8);
 		//sesuatu = sesuatu.substring(1,sesuatu.length()-1);
+		String result1 = new String(outputCharacteristic.getValue());
+		System.out.println(result1);
+		//readCharacteristic(outputCharacteristic).with(buttonCallback).enqueue();
+		//String result2 = new String(outputCharacteristic.getValue());
+		//System.out.println(result2);
 
-		String result = new String(outputCharacteristic.getValue());
 		System.out.println(sesuatu);
 		System.out.println(bytearr);
-		System.out.println(result);
+
 //		String kata[] = sesuatu.split(",");
 //		for(int i=0;i<kata.length;i++){
 //			if(!kata[i].matches("0")){
@@ -270,8 +277,8 @@ public class BlinkyManager extends ObservableBleManager {
 //		}
 
 
-		System.out.println(sesuatu.charAt(0));
-		System.out.println(outputCharacteristic.getIntValue(0,0));
+		//System.out.println(sesuatu.charAt(0));
+		//System.out.println(outputCharacteristic.getIntValue(0,0));
 		//writeCharacteristic(ledCharacteristic,BlinkyLED.BT2()).with(ledCallback).enqueue();
 	}
 	public void sendButton3(){

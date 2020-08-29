@@ -49,6 +49,8 @@ import no.nordicsemi.android.ble.livedata.state.ConnectionState;
 import no.nordicsemi.android.blinky.adapter.DiscoveredBluetoothDevice;
 import no.nordicsemi.android.blinky.viewmodels.BlinkyViewModel;
 
+import static java.lang.Thread.sleep;
+
 @SuppressWarnings("ConstantConditions")
 public class BlinkyActivity extends AppCompatActivity {
 	public static final String EXTRA_DEVICE = "no.nordicsemi.android.blinky.EXTRA_DEVICE";
@@ -114,6 +116,8 @@ public class BlinkyActivity extends AppCompatActivity {
 			public void onClick(View v) {
 				System.out.println("BUTTON 2");
 				viewModel.sendButton2();
+
+				//viewModel.sendButton2();
 			}
 		});
 		button3.setOnClickListener(new View.OnClickListener() {
